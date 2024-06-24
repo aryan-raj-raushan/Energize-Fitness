@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer/Footer";
 import { useAuth } from "../context/AuthContext";
 import AuthenticatedWith from "../HOC/AuthenticatedWith";
@@ -8,7 +8,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { handleLogin } = useAuth();
-  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const goTop = () => {
