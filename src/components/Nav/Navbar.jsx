@@ -9,12 +9,13 @@ import SideImg3 from "../../images/sidebar/3.jpg";
 import SideImg4 from "../../images/sidebar/4.jpg";
 import SideImg5 from "../../images/sidebar/5.jpg";
 import SideImg6 from "../../images/sidebar/6.jpg";
-
+import { useAuth } from "../../context/AuthContext";
 function Navbar() {
   const [spin, setSpin] = useState(false);
   const [sticky, setSticky] = useState(false);
   const [sidebar, setSideBar] = useState(false);
   const [hamburger, setHamburger] = useState(false);
+  const { user, handleLogout } = useAuth();
 
   const joinSpin = () => {
     setSpin(true);
@@ -52,6 +53,21 @@ function Navbar() {
   const hamburgerMenu = () => {
     setHamburger(!hamburger);
   };
+  const [showDropdown, setShowDropdown] = useState(false);
+  const handleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const MenuItems = [
+    { text: 'Home', href: '/#home', isExternal: true },
+    { text: 'About', href: '/about', isExternal: false },
+    { text: 'Schedule', href: '/schedule/monday', isExternal: false },
+    { text: 'Gallery', href: '/gallery/page-1', isExternal: false },
+    { text: 'Blog', href: '/blog', isExternal: false },
+    { text: 'Pricing', href: '/pricing', isExternal: false },
+    { text: 'Classes', href: '/classes', isExternal: false },
+    { text: 'Contact', href: '/contact', isExternal: false },
+  ];
 
   return (
     <>
@@ -69,10 +85,10 @@ function Navbar() {
           />
         </Link>
         <div className="navlist-nav">
-          <NavList />
+          <NavList data={MenuItems} goTop={goTop}/>
         </div>
         <div className="flex items-center gap-10">
-          <div className="flex gap-10">
+          <div className="flex gap-10 items-center">
             {/* mobile menu -------------- */}
 
             {/* hamburger menu */}
@@ -88,78 +104,27 @@ function Navbar() {
 
               {/* links */}
               <ul className="text-center flex flex-col gap-10 absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
-                <li onClick={hamburgerMenu}>
-                  <a
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    href="/#home"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/about"
-                  >
-                    About
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/schedule/monday"
-                  >
-                    Schedule
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/gallery/page-1"
-                  >
-                    Gallery
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/blog"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/contact"
-                  >
-                    Contact
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/pricing"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li onClick={hamburgerMenu}>
-                  <Link
-                    onClick={() => window.top(0, 0)}
-                    className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
-                    to="/classes"
-                  >
-                    Classes
-                  </Link>
-                </li>
+                {MenuItems.map((item, index) => (
+                  <li key={index} onClick={hamburgerMenu}>
+                    {item.isExternal ? (
+                      <a
+                        onClick={() => window.top(0, 0)}
+                        className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
+                        href={item.href}
+                      >
+                        {item.text}
+                      </a>
+                    ) : (
+                      <Link
+                        onClick={() => window.top(0, 0)}
+                        className="text-[2rem] font-medium hover:text-[#ff0336] ease-in duration-200"
+                        to={item.href}
+                      >
+                        {item.text}
+                      </Link>
+                    )}
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -265,9 +230,31 @@ function Navbar() {
               className="fa-bars fa-solid hidden text-white text-4xl cursor-pointer hover:text-[#FF0336] ease-in duration-200"
             ></i>
             {/* account */}
-            <Link onClick={goTop} to="/signup" title="signup_button">
-              <i className="fa-regular fa-user  text-white text-4xl cursor-pointer hover:text-[#FF0336] ease-in duration-200"></i>
-            </Link>
+            {!user ? (
+              <Link
+                onClick={goTop}
+                to="/login"
+                title="signup_button"
+                className="text-black px-4 text-xl py-4 mt-1  bg-white rounded drop-shadow shadow-inner "
+              >
+                Login{" "}
+              </Link>
+            ) : (
+              <div className="relative">
+                <i
+                  className="fa-regular fa-user  text-white text-4xl cursor-pointer hover:text-[#FF0336] ease-in duration-200"
+                  onClick={handleDropdown}
+                ></i>
+                {showDropdown && (
+                  <div
+                    className="absolute top-12 px-4 font-medium bg-white text-xl cursor-pointer "
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </div>
+                )}
+              </div>
+            )}
             {/* sidebar */}
             <i
               onClick={sideBar}

@@ -1,8 +1,8 @@
+import React from "react";
 import FooterLogo from "../../images/logo/logo-footer.svg";
 
 function Footer() {
   return (
-    <>
       <footer className="bg-white">
         <div className="container page-padding py-[10rem]">
           {/* footer div all */}
@@ -96,7 +96,6 @@ function Footer() {
           </div>
         </div>
       </footer>
-    </>
   );
 }
 

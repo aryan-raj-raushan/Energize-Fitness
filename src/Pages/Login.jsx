@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { UserAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer/Footer";
+import { useAuth } from "../context/AuthContext";
+import AuthenticatedWith from "../HOC/AuthenticatedWith";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, logIn } = UserAuth();
+  const { handleLogin } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -20,12 +21,11 @@ function Login() {
     e.preventDefault();
     setError("");
     try {
-      await logIn(email, password);
-      navigate("/#home");
+      await handleLogin(email, password); 
       goTop();
     } catch (error) {
-      console.log(error);
-      setError(error.message);
+      console.error("Login Error:", error.message);
+      setError("Wrong email or password");
     }
   };
 
@@ -38,10 +38,10 @@ function Login() {
           </h1>
         </div>
         {/* form  */}
-        <div className="page-padding py-[10rem] flex justify-center">
+        <div className="page-padding py-20 flex justify-center">
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col py-40 px-20 bg-black w-[55rem] min450:w-full  shadow-xl"
+            className="flex flex-col py-10 px-20 bg-black w-[55rem] min450:w-full  shadow-xl"
           >
             {error ? (
               <p className="text-white bg-[#ff0336] font-bold text-[1.6rem] px-10 py-5 text-center mb-10">
@@ -83,11 +83,8 @@ function Login() {
                 Sign Up
               </Link>
             </div>
-            <p className="text-[#ffffffbc] text-[1.4rem] mt-3">
-              <span className="text-[#ff0336]">Test Account</span> -
-              gymate@gymail.com <span className="text-[#ff0336]"> / </span>
-              testpassword123
-            </p>
+
+            <AuthenticatedWith title="Login in" />
           </form>
         </div>
         <Footer />

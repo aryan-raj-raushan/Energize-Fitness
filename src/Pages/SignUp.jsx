@@ -1,31 +1,38 @@
 import { useState } from "react";
-import { UserAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer/Footer";
+import React from "react";
+import { useAuth } from "../context/AuthContext";
+import AuthenticatedWith from "../HOC/AuthenticatedWith";
 
-function Signup() {
+const Signup = () => {
+  const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, signUp } = UserAuth();
+ 
+  const {
+    signUpWithEmail,
+  } = useAuth();
   const navigate = useNavigate();
 
-  const goTop = () => {
+  const handleEmailSignUp = async (e) => {
+    e.preventDefault();
+    try {
+      await signUpWithEmail(name, mobile, email, password);
+      navigate("/");
+      goTop();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const goTop = () => { 
     window.scrollTo({
       top: 0,
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await signUp(email, password);
-      navigate("/#home");
-      goTop();
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <>
       <section className="login-section ">
@@ -35,11 +42,31 @@ function Signup() {
           </h1>
         </div>
         {/* form  */}
-        <div className="py-[10rem] flex justify-center page-padding">
+        <div className="py-10 flex justify-center page-padding">
           <form
-            onSubmit={handleSubmit}
-            className="flex flex-col py-40 px-20 bg-black w-[55rem] min450:w-full  shadow-xl"
+            onSubmit={handleEmailSignUp}
+            className="flex flex-col py-10 px-20 bg-black w-[55rem] min450:w-full shadow-xl"
           >
+            <label className="text-[2rem] text-white mb-3 font-medium ">
+              Name
+            </label>
+            <input
+              className="text-[1.7rem] px-8 py-4 mb-10 w-full outline-[#ff0336] "
+              placeholder="Your Name"
+              type="text"
+              onChange={(e) => setName(e.target.value)}
+            ></input>
+
+            <label className="text-[2rem] text-white mb-3 font-medium ">
+              Mobile
+            </label>
+            <input
+              className="text-[1.7rem] px-8 py-4 mb-10 w-full outline-[#ff0336] "
+              placeholder="Your Mobile Number"
+              type="text"
+              onChange={(e) => setMobile(e.target.value)}
+            ></input>
+
             <label className="text-[2rem] text-white mb-3 font-medium ">
               Email
             </label>
@@ -50,7 +77,7 @@ function Signup() {
               onChange={(e) => setEmail(e.target.value)}
             ></input>
 
-            <label className="text-[2rem] text-white mb-3 font-medium outline-[#ff0336] outline-2">
+            <label className="text-[2rem] text-white mb-3 font-medium ">
               Password
             </label>
             <input
@@ -80,10 +107,12 @@ function Signup() {
               <span className="text-[#ff0336]"> Sign In</span> Page for Test
               Account )
             </p>
+            <AuthenticatedWith title="Sign up"/>
           </form>
         </div>
         <Footer />
       </section>
+      <div id="recaptcha-container"></div>
     </>
   );
 }
